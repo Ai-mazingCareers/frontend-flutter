@@ -6,6 +6,8 @@ import 'job_recruiter/jobrecruiter_home.dart'; // Assuming it's the home screen 
 import 'package:aimazing/utils/constants.dart';
 import 'job_seeker/resume_form_screen.dart';
 import 'job_recruiter/job_post_form.dart';
+import 'package:aimazing/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -17,12 +19,36 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   String selectedRole = 'Job Seeker'; // Default role
 
-  void _login() {
-    // Perform login logic or navigation based on role
-    if (selectedRole == 'Job Seeker') {
-      Get.to(() => ResumeFormScreen());
+  void _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      Get.snackbar('Error', 'Email and password cannot be empty');
+      return;
+    }
+
+    final response = await ApiService.loginUser(email, password);
+
+    if (response.containsKey('error')) {
+      Get.snackbar('Login Failed', response['error']);
     } else {
-      Get.to(() => JobPostFormScreen());
+      final user = response['user'];
+      final token = response['token'];
+
+      // Save token or user data if needed (SharedPreferences etc.)
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+      await prefs.setString('userName', user['name']);
+      await prefs.setString('userEmail', user['email']);
+
+      Get.snackbar('Success', 'Welcome ${user['name']}');
+
+      if (selectedRole == 'Job Seeker') {
+        Get.to(() => ResumeFormScreen());
+      } else {
+        Get.to(() => JobPostFormScreen());
+      }
     }
   }
 

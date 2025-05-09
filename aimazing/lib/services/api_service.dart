@@ -2,36 +2,29 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  // Replace with your actual API endpoint
-  final String apiUrl = 'https://your-api-endpoint.com/submit';
+  static const String baseUrl = "http://10.0.2.2:5001/api";
 
-  // Function to send data to the API and return a success flag
-  Future<bool> submitResumeData(String name) async {
-    // Prepare the data to send
-    Map<String, dynamic> requestData = {
-      'name': name,
-    };
+  static Future<Map<String, dynamic>> loginUser(
+      String email, String password) async {
+    final url = Uri.parse('$baseUrl/user/login');
 
     try {
       final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/json', // Ensure content type is JSON
-        },
-        body: json.encode(requestData), // Send the name as JSON data
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "email": email,
+          "password": password,
+        }),
       );
 
       if (response.statusCode == 200) {
-        // Handle success
-        return true;
+        return jsonDecode(response.body); // contains token & user info
       } else {
-        // Handle error if the response status is not 200
-        throw Exception('Failed to submit data');
+        return {"error": jsonDecode(response.body)['message']};
       }
     } catch (e) {
-      // Handle network or other errors
-      print('Error: $e');
-      throw Exception('Error: $e');
+      return {"error": "An error occurred: $e"};
     }
   }
 }
