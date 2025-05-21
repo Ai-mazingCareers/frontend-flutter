@@ -85,8 +85,7 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       // Check if the response contains a success message and user ID
-      if (response.containsKey('userId') &&
-          response['message'] == 'Signed up successfully') {
+      if (response['message'] == 'Signed up successfully') {
         // Show success Snackbar
         Get.snackbar(
           'Success',

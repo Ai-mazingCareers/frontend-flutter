@@ -1,6 +1,8 @@
 import 'package:aimazing/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:aimazing/screens/job_seeker/job_detail_screen.dart'; // Import the JobDetailScreen
+import 'package:aimazing/screens/job_seeker/job_detail_screen.dart';
+import 'package:aimazing/widgets/applyjob.dart';
+// Import the JobDetailScreen
 
 class JobCard extends StatelessWidget {
   final String jobTitle;
@@ -12,10 +14,12 @@ class JobCard extends StatelessWidget {
   final String applicationDeadline;
   final String jobDescription;
   final String jobRequirements;
-  final Widget atsScoreButton; // Add this line to accept ATS score button
+  final Widget atsScoreButton;
+  final String jobId; // Add this line to accept ATS score button
 
   const JobCard({
     Key? key,
+    required this.jobId,
     required this.jobTitle,
     required this.companyName,
     required this.location,
@@ -80,26 +84,43 @@ class JobCard extends StatelessWidget {
                   child: Text('Close'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close the dialog
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Apply'),
-                        content: Text('You have applied successfully!'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text('Close'),
-                          ),
-                        ],
-                      ),
-                    );
+                  onPressed: () async {
+                    try {
+                      final message = await applyJob(
+                        jobId: jobId,
+                      );
+
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Apply"),
+                          content: Text(message),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text("Close"),
+                            ),
+                          ],
+                        ),
+                      );
+                    } catch (e) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Error"),
+                          content: Text(e.toString()),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text("Close"),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
                   },
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                  child: Text('Apply'),
-                ),
+                  child: Text("Apply"),
+                )
               ],
             );
           },
@@ -168,30 +189,49 @@ class JobCard extends StatelessWidget {
                 children: [
                   atsScoreButton, // Display the passed ATS score button
                   ElevatedButton(
-                    onPressed: () {
-                      // Handle apply button click
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text('Apply'),
-                          content: Text('You have applied successfully!'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('Close'),
-                            ),
-                          ],
-                        ),
-                      );
+                    onPressed: () async {
+                      try {
+                        final message = await applyJob(
+                          jobId: jobId,
+                        );
+
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text("Apply"),
+                            content: Text(message),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text("Close"),
+                              ),
+                            ],
+                          ),
+                        );
+                      } catch (e) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text("Error"),
+                            content: Text(e.toString()),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text("Close"),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonColor,
                     ),
                     child: Text(
-                      'Apply',
+                      "Apply",
                       style: TextStyle(color: Colors.white),
                     ),
-                  ),
+                  )
                 ],
               ),
             ],
@@ -201,3 +241,6 @@ class JobCard extends StatelessWidget {
     );
   }
 }
+// style: ElevatedButton.styleFrom(
+//                       backgroundColor: buttonColor,
+//                     ),

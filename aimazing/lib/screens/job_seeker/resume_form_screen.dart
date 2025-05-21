@@ -148,7 +148,7 @@ class _ResumeFormScreenState extends State<ResumeFormScreen> {
     await prefs.setString('user_email', _emailController.text);
 
     String jsonResumeData = json.encode(resumeData);
-    const String apiUrl = "http://10.0.2.2:2400/api/resume";
+    const String apiUrl = "http://10.0.2.2:5001/api/resume";
 
     try {
       // Make a POST request

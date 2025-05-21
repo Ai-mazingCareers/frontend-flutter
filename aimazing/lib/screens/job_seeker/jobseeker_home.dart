@@ -235,6 +235,7 @@ class _JobSeekerHomeState extends State<JobSeekerHome> {
                   itemBuilder: (context, index) {
                     var job = filteredJobs[index];
                     return JobCard(
+                      jobId: job['_id'],
                       jobTitle: job['job_title'] ?? 'No job title available',
                       companyName:
                           job['company_name'] ?? 'No company name available',

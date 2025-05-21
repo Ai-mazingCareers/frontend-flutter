@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:aimazing/utils/constants.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ResumeRecommendation extends StatefulWidget {
   final String keyword; // Add a keyword field to receive job role
@@ -29,8 +30,12 @@ class _ResumeRecommendationState extends State<ResumeRecommendation> {
   }
 
   Future<void> fetchJobs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail =
+        prefs.getString('userEmail') ?? ''; // fallback in case it's null
+
     final url =
-        'http://10.0.2.2:5001/api/home/search?keyword=${widget.keyword}&email=$email'; // Use widget.keyword here
+        'http://10.0.2.2:5001/api/home/search?keyword=${widget.keyword}&email=$savedEmail'; // Use widget.keyword here
     try {
       final response = await http.get(Uri.parse(url));
 

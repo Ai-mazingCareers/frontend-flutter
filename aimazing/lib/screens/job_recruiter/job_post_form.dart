@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:aimazing/screens/job_seeker/jobseeker_home.dart';
 import 'package:http/http.dart' as http;
 import 'package:aimazing/fields/degree_fields.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:aimazing/fields/skills_suggestion.dart';
 import 'package:get/get.dart';
 import 'package:aimazing/widgets/date_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:aimazing/screens/job_recruiter/jobrecruiter_home.dart';
 
 class JobPostFormScreen extends StatefulWidget {
   @override
@@ -60,6 +62,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
   }
 
   void _submitForm() async {
+    Get.off(() => RecruiterHome());
     if (!_formKey.currentState!.validate()) return;
 
     Map<String, dynamic> jobPostData = {
@@ -87,7 +90,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
 
     String jsonJobPostData = json.encode(jobPostData);
 
-    const String apiUrl = "http://10.0.2.2:2400/api/job";
+    const String apiUrl = "http://10.0.2.2:5001/api/job";
 
     try {
       // Make the POST request
