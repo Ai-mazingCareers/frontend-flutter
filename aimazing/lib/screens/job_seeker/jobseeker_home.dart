@@ -196,71 +196,110 @@ class _JobSeekerHomeState extends State<JobSeekerHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Job Board', style: TextStyle(color: Colors.white)),
-        backgroundColor: buttonColor,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [buttonColor, Colors.teal.shade300],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Icon(Icons.person, color: buttonColor),
+            ),
+            SizedBox(width: 8),
+            Text('Job Board',
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
+          ],
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_list),
+            icon: Icon(Icons.filter_list, color: Colors.white),
+            tooltip: "Filter Jobs",
             onPressed: () {
               showModalBottomSheet(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
                 context: context,
-                builder: (context) {
-                  return FilterOptions(
-                    selectedLocation: selectedLocation,
-                    selectedEmploymentType: selectedEmploymentType,
-                    onApply: (location, employmentType) {
-                      setState(() {
-                        selectedLocation = location;
-                        selectedEmploymentType = employmentType;
-                      });
-                      applyFilters(); // Reapply filters
-                      Navigator.pop(context);
-                    },
-                  );
-                },
+                builder: (context) => FilterOptions(
+                  selectedLocation: selectedLocation,
+                  selectedEmploymentType: selectedEmploymentType,
+                  onApply: (location, employmentType) {
+                    setState(() {
+                      selectedLocation = location;
+                      selectedEmploymentType = employmentType;
+                    });
+                    applyFilters();
+                    Navigator.pop(context);
+                  },
+                ),
               );
             },
           ),
         ],
       ),
-      // Add Drawer here
       drawer: CustomDrawer(),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Show loading spinner
+          ? Center(child: CircularProgressIndicator(color: buttonColor))
           : filteredJobs.isEmpty
               ? Center(
-                  child: Text('No jobs available')) // Show if no jobs match
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.search_off, size: 80, color: Colors.grey[300]),
+                      SizedBox(height: 16),
+                      Text('No jobs found',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[700])),
+                      SizedBox(height: 8),
+                      Text('Try adjusting your filters or check back later.',
+                          style:
+                              TextStyle(fontSize: 16, color: Colors.grey[500])),
+                    ],
+                  ),
+                )
               : ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                   itemCount: filteredJobs.length,
                   itemBuilder: (context, index) {
                     var job = filteredJobs[index];
-                    return JobCard(
-                      jobId: job['_id'],
-                      jobTitle: job['job_title'] ?? 'No job title available',
-                      companyName:
-                          job['company_name'] ?? 'No company name available',
-                      location: job['location'] ?? 'No location specified',
-                      employmentType: job['employment_type'] ??
-                          'No employment type specified',
-                      salaryRange: job['salary_range'] != null
-                          ? "\$${job['salary_range']['minimum'] ?? 'N/A'} - \$${job['salary_range']['maximum'] ?? 'N/A'} ${job['salary_range']['currency'] ?? 'USD'}"
-                          : 'Salary range not available',
-                      jobPostDate:
-                          job['job_post_date'] ?? 'No post date available',
-                      applicationDeadline: job['application_deadline'] ??
-                          'No application deadline available',
-                      jobDescription:
-                          job['description'] ?? 'No description available',
-                      jobRequirements:
-                          job['requirements'] ?? 'No requirements specified',
-                      atsScoreButton: IconButton(
-                        icon: Icon(Icons.trending_up),
-                        onPressed: () {
-                          // Replace with actual user email
-                          String jobId =
-                              job['_id']; // Replace with actual job ID
-                          showATSScoreDialog(jobId);
-                        },
+                    return AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeIn,
+                      margin: EdgeInsets.symmetric(vertical: 6),
+                      child: JobCard(
+                        jobId: job['_id'],
+                        jobTitle: job['job_title'] ?? 'No job title available',
+                        companyName:
+                            job['company_name'] ?? 'No company name available',
+                        location: job['location'] ?? 'No location specified',
+                        employmentType: job['employment_type'] ??
+                            'No employment type specified',
+                        salaryRange: job['salary_range'] != null
+                            ? "\$${job['salary_range']['minimum'] ?? 'N/A'} - \$${job['salary_range']['maximum'] ?? 'N/A'} ${job['salary_range']['currency'] ?? 'USD'}"
+                            : 'Salary range not available',
+                        jobPostDate:
+                            job['job_post_date'] ?? 'No post date available',
+                        applicationDeadline: job['application_deadline'] ??
+                            'No application deadline available',
+                        jobDescription:
+                            job['description'] ?? 'No description available',
+                        jobRequirements:
+                            job['requirements'] ?? 'No requirements specified',
+                        atsScoreButton: IconButton(
+                          icon: Icon(Icons.trending_up, color: Colors.teal),
+                          tooltip: "Check your ATS score",
+                          onPressed: () => showATSScoreDialog(job['_id']),
+                        ),
                       ),
                     );
                   },
